@@ -51,7 +51,24 @@ images.forEach((image) => {
     overlay.innerHTML = `<button class="overlay-esc">X</button><img src="${image.src}" alt="${image.alt}">`;
     overlay.style.height = "100vh";
     overlay.style.width = "100vw";
+    document.querySelector(".overlay-esc").addEventListener("click", () => {
+      overlay.style.height = "0";
+      overlay.style.width = "0";
+    });
   });
+});
+
+overlay.addEventListener("transitionend", () => {
+  if (overlay.style.height === "0") {
+    overlay.innerHTML = "";
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && overlay.style.height === "100vh") {
+    overlay.style.height = "0";
+    overlay.style.width = "0";
+  }
 });
 
 setTimeout(() => {
