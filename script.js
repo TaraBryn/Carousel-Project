@@ -1,8 +1,8 @@
 const carousel = document.querySelector(".carousel");
-const slides = Array.from(carousel.children);
+let slides = Array.from(carousel.children);
+const overlay = document.querySelector(".overlay");
 
-let slideIndex = 2;
-const slideWidth = slides[0].offsetWidth; // Get the width of a single slide
+let slideIndex = 1;
 
 carousel.innerHTML =
   slides[slides.length - 2].outerHTML +
@@ -11,23 +11,50 @@ carousel.innerHTML =
   slides[0].outerHTML +
   slides[1].outerHTML; // Duplicate the first and last slides
 
-translateValue = (index) => -index * slideWidth + slideWidth / 2;
+const images = document.querySelectorAll(".carousel img");
+slides = Array.from(carousel.children); // Update the slides array
+
+function translateValue(index) {
+  return (
+    -slides.reduce((acc, slide, i) => {
+      if (i < index) {
+        return acc + slide.offsetWidth;
+      }
+      return acc;
+    }, 0) -
+    slides[index].offsetWidth / 2
+  );
+}
+
 translateX = () =>
   (carousel.style.transform = `translateX(${translateValue(slideIndex)}px)`);
 
 function updateSlide() {
+  console.log(slideIndex);
   carousel.style.transition = "transform 0.9s ease-in-out";
   slideIndex++;
   translateX();
 }
 
 carousel.addEventListener("transitionend", () => {
-  if (slideIndex >= slides.length + 2) {
+  if (slideIndex >= slides.length - 3) {
     carousel.style.transition = "none";
-    slideIndex = 2;
+    slideIndex = 1;
     translateX();
   }
 });
 
 translateX();
-setInterval(updateSlide, 2000); // Update the slide every half second
+
+images.forEach((image) => {
+  image.addEventListener("click", () => {
+    overlay.innerHTML = `<button class="overlay-esc">X</button><img src="${image.src}" alt="${image.alt}">`;
+    overlay.style.height = "100vh";
+    overlay.style.width = "100vw";
+  });
+});
+
+setTimeout(() => {
+  updateSlide();
+  setInterval(updateSlide, 2000); // Update the slide every half second
+}, 2000);
